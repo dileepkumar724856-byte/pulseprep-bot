@@ -7,7 +7,6 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
-    PollAnswerHandler,
     filters,
     ContextTypes
 )
@@ -15,84 +14,31 @@ from telegram.ext import (
 import os
 import random
 
+# IMPORT QUESTIONS
+from units_questions import units_questions
+
 TOKEN = os.getenv("TOKEN")
 
 # MENU
 MENU = [
-    ["🧬 Biology", "⚡ Physics"],
-    ["🧪 Chemistry", "🎲 Daily Quiz"],
-    ["🏆 Leaderboard", "🔥 My Streak"]
+    ["⚡ Units & Dimensions"],
+    ["🎲 Random Quiz"],
+    ["🏆 Leaderboard"]
 ]
-
-# USER DATA
-user_scores = {}
-user_streaks = {}
-
-# QUESTION BANK
-biology_questions = [
-
-    {
-        "question": "Powerhouse of cell?",
-        "options": [
-            "Nucleus",
-            "Mitochondria",
-            "Ribosome",
-            "Golgi Body"
-        ],
-        "answer": 1,
-        "explanation": "Mitochondria produces ATP."
-    }
-
-]
-
-physics_questions = [
-
-    {
-        "question": "SI unit of force?",
-        "options": [
-            "Newton",
-            "Joule",
-            "Watt",
-            "Pascal"
-        ],
-        "answer": 0,
-        "explanation": "SI unit of force is Newton."
-    }
-
-]
-
-chemistry_questions = [
-
-    {
-        "question": "pH of neutral water?",
-        "options": [
-            "5",
-            "7",
-            "9",
-            "14"
-        ],
-        "answer": 1,
-        "explanation": "Neutral water pH is 7."
-    }
-
-]
-
-# STORE ACTIVE POLLS
-active_polls = {}
 
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = """
 ━━━━━━━━━━━━━━
-🚀 PULSEPREP QUIZ BOT
+🚀 PULSEPREP PHYSICS PYQ BOT
 ━━━━━━━━━━━━━━
 
-🧠 Daily Practice
+📚 Chapter Wise PYQs
+🎲 Random Practice
 🏆 Leaderboard
-🔥 Streak System
 
-Choose Subject 👇
+Choose Option 👇
 """
 
     await update.message.reply_text(
@@ -108,47 +54,13 @@ async def send_quiz(update, questions):
 
     q = random.choice(questions)
 
-    message = await update.message.reply_poll(
-        question=q["question"],
+    await update.message.reply_poll(
+        question=f"{q['question']}\n\n📘 {q['year']}",
         options=q["options"],
         type="quiz",
         correct_option_id=q["answer"],
-        explanation=q["explanation"],
-        is_anonymous=False
+        explanation=q["explanation"]
     )
-
-    active_polls[message.poll.id] = q
-
-# HANDLE POLL ANSWERS
-async def receive_poll_answer(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
-
-    answer = update.poll_answer
-
-    user_id = answer.user.id
-
-    poll_id = answer.poll_id
-
-    selected = answer.option_ids[0]
-
-    if user_id not in user_scores:
-        user_scores[user_id] = 0
-
-    if user_id not in user_streaks:
-        user_streaks[user_id] = 0
-
-    if poll_id in active_polls:
-
-        correct = active_polls[poll_id]["answer"]
-
-        # CORRECT ANSWER
-        if selected == correct:
-
-            user_scores[user_id] += 1
-
-            user_streaks[user_id] += 1
 
 # HANDLE BUTTONS
 async def handle_message(
@@ -158,86 +70,27 @@ async def handle_message(
 
     text = update.message.text
 
-    # BIOLOGY
-    if text == "🧬 Biology":
+    # UNITS & DIMENSIONS
+    if text == "⚡ Units & Dimensions":
 
         await send_quiz(
             update,
-            biology_questions
+            units_questions
         )
 
-    # PHYSICS
-    elif text == "⚡ Physics":
+    # RANDOM QUIZ
+    elif text == "🎲 Random Quiz":
 
         await send_quiz(
             update,
-            physics_questions
-        )
-
-    # CHEMISTRY
-    elif text == "🧪 Chemistry":
-
-        await send_quiz(
-            update,
-            chemistry_questions
-        )
-
-    # DAILY QUIZ
-    elif text == "🎲 Daily Quiz":
-
-        all_questions = (
-            biology_questions +
-            physics_questions +
-            chemistry_questions
-        )
-
-        await send_quiz(
-            update,
-            all_questions
+            units_questions
         )
 
     # LEADERBOARD
     elif text == "🏆 Leaderboard":
 
-        if not user_scores:
-
-            await update.message.reply_text(
-                "No quiz attempts yet."
-            )
-
-            return
-
-        sorted_users = sorted(
-            user_scores.items(),
-            key=lambda x: x[1],
-            reverse=True
-        )
-
-        text_data = "🏆 Leaderboard\n\n"
-
-        rank = 1
-
-        for user_id, score in sorted_users[:5]:
-
-            text_data += (
-                f"{rank}. User {user_id} → {score} points\n"
-            )
-
-            rank += 1
-
         await update.message.reply_text(
-            text_data
-        )
-
-    # STREAK
-    elif text == "🔥 My Streak":
-
-        user_id = update.effective_user.id
-
-        streak = user_streaks.get(user_id, 0)
-
-        await update.message.reply_text(
-            f"🔥 Your Current Streak: {streak}"
+            "🏆 Leaderboard Coming Soon"
         )
 
 # BUILD APP
@@ -253,10 +106,6 @@ app.add_handler(
         filters.TEXT & ~filters.COMMAND,
         handle_message
     )
-)
-
-app.add_handler(
-    PollAnswerHandler(receive_poll_answer)
 )
 
 print("Bot Running...")
