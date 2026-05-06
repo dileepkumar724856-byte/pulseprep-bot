@@ -1,15 +1,12 @@
 from telegram import (
     Update,
-    ReplyKeyboardMarkup,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup
+    ReplyKeyboardMarkup
 )
 
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
-    CallbackQueryHandler,
     filters,
     ContextTypes
 )
@@ -18,39 +15,27 @@ import os
 
 TOKEN = os.getenv("TOKEN")
 
-# CHANNEL USERNAME
-
-
-# MAIN MENU
+# MENU
 MENU = [
     ["🧬 Biology", "⚡ Physics"],
     ["🧪 Chemistry", "🏆 Leaderboard"],
     ["💎 Premium", "❓ Help"]
 ]
 
-# FORCE JOIN CHECK
-
-
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    user = update.effective_user
-
-
-    # WELCOME UI
-    text = f"""
+    text = """
 ━━━━━━━━━━━━━━
 🚀 PULSEPREP NEET BOT
 ━━━━━━━━━━━━━━
 
-👋 Welcome {user.first_name}
-
 📚 Notes
 🧠 Daily Tests
 🏆 Leaderboard
-💎 Premium Access
+💎 Premium
 
-Choose Subject Below 👇
+Choose Subject 👇
 """
 
     await update.message.reply_text(
@@ -61,43 +46,57 @@ Choose Subject Below 👇
         )
     )
 
-# BIOLOGY QUIZ
-async def biology_poll(update):
+# BIOLOGY
+async def biology(update):
 
+    # SEND PDF
+    await update.message.reply_document(
+        document=open("biology.pdf", "rb")
+    )
+
+    # SEND QUIZ
     await update.message.reply_poll(
-        question="Which organelle is called powerhouse of cell?",
+        question="Powerhouse of cell?",
         options=[
             "Nucleus",
             "Mitochondria",
-            "Ribosome",
-            "Golgi Body"
+            "Golgi Body",
+            "Ribosome"
         ],
         type="quiz",
         correct_option_id=1,
-        explanation="Mitochondria produces ATP energy."
+        explanation="Mitochondria produces ATP."
     )
 
-# PHYSICS QUIZ
-async def physics_poll(update):
+# PHYSICS
+async def physics(update):
+
+    await update.message.reply_document(
+        document=open("physics.pdf", "rb")
+    )
 
     await update.message.reply_poll(
-        question="SI unit of force is?",
+        question="SI unit of force?",
         options=[
-            "Joule",
             "Newton",
+            "Joule",
             "Pascal",
             "Watt"
         ],
         type="quiz",
-        correct_option_id=1,
-        explanation="Force SI unit is Newton."
+        correct_option_id=0,
+        explanation="SI unit of force is Newton."
     )
 
-# CHEMISTRY QUIZ
-async def chemistry_poll(update):
+# CHEMISTRY
+async def chemistry(update):
+
+    await update.message.reply_document(
+        document=open("chemistry.pdf", "rb")
+    )
 
     await update.message.reply_poll(
-        question="pH of neutral water is?",
+        question="pH of neutral water?",
         options=[
             "5",
             "7",
@@ -119,15 +118,15 @@ async def handle_message(
 
     if text == "🧬 Biology":
 
-        await biology_poll(update)
+        await biology(update)
 
     elif text == "⚡ Physics":
 
-        await physics_poll(update)
+        await physics(update)
 
     elif text == "🧪 Chemistry":
 
-        await chemistry_poll(update)
+        await chemistry(update)
 
     elif text == "🏆 Leaderboard":
 
@@ -138,13 +137,13 @@ async def handle_message(
     elif text == "💎 Premium":
 
         await update.message.reply_text(
-            "💎 Premium System Coming Soon"
+            "💎 Premium Coming Soon"
         )
 
     elif text == "❓ Help":
 
         await update.message.reply_text(
-            "Use Subject Buttons To Start Quiz 👇"
+            "Choose Any Subject Button 👇"
         )
 
 # BUILD APP
