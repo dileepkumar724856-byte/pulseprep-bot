@@ -53,8 +53,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # SEND QUIZ
-async def send_quiz(update, context):
-    question = quiz_data[0]
+async def send_quiz(update, context, q_index=0):
+
+    question = quiz_data[q_index]
+
+    keyboard = []
+
+    for option in question["options"]:
+        keyboard.append(
+            [InlineKeyboardButton(option, callback_data=f"{q_index}|{option}")]
+        )
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        f"🧠 {question['question']}",
+        reply_markup=reply_markup
+    )
+    
+    user_data = {}
 
     keyboard = []
     for option in question["options"]:
@@ -92,25 +109,39 @@ async def quiz_button(update, context):
     query = update.callback_query
     await query.answer()
 
-    selected = query.data
-    correct = quiz_data[0]["answer"]
+    user_id = query.from_user.id
+
+    if user_id not in user_data:
+        user_data[user_id] = 0
+
+    data = query.data.split("|")
+
+    q_index = int(data[0])
+    selected = data[1]
+
+    correct = quiz_data[q_index]["answer"]
 
     if selected == correct:
-        await query.message.reply_text("✅ Correct Answer")
+        user_data[user_id] += 1
+        await query.message.reply_text("✅ Correct")
     else:
-        await query.message.reply_text(f"❌ Wrong\nCorrect: {correct}")
+        await query.message.reply_text(
+            f"❌ Wrong\nCorrect: {correct}"
+        )
 
-# APP START
-app = ApplicationBuilder().token(TOKEN).build()
+    next_q = q_index + 1
 
-app.add_handler(CommandHandler("start", start))
+    if next_q < len(quiz_data):
+        await send_quiz(query.message, context, next_q)
 
-app.add_handler(
-    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
-)
+    else:
+        score = user_data[user_id]
 
-app.add_handler(CallbackQueryHandler(quiz_button))
+        await query.message.reply_text(
+            f"🏁 Quiz Finished\n🎯 Your Score: {score}/{len(quiz_data)}"
+        )
 
-print("Bot Running...")
+        user_data[user_id] = 0
 
-app.run_polling()
+
+
