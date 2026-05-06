@@ -1,15 +1,12 @@
 from telegram import (
     Update,
-    ReplyKeyboardMarkup,
-    InlineKeyboardButton,
-    InlineKeyboardMarkup
+    ReplyKeyboardMarkup
 )
 
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
-    CallbackQueryHandler,
     filters,
     ContextTypes
 )
@@ -17,19 +14,6 @@ from telegram.ext import (
 import os
 
 TOKEN = os.getenv("TOKEN")
-
-# QUIZ QUESTIONS
-quiz_data = [
-    {
-        "question": "Human heart has how many chambers?",
-        "options": ["2", "3", "4", "5"],
-        "answer": "4"
-    }
-]
-
-# STATS
-correct_count = 0
-wrong_count = 0
 
 # MENU
 MENU = [
@@ -48,30 +32,29 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
     )
 
-# SEND QUIZ
-async def send_quiz(message, context):
+# QUIZ POLL
+async def send_poll(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
-    question = quiz_data[0]
+    question = "Mendel's law of independent assortment is applicable for:"
 
-    keyboard = []
+    options = [
+        "All genes in all organisms",
+        "All genes of pea plant only",
+        "All non linked genes only",
+        "All linked genes only"
+    ]
 
-    for option in question["options"]:
+    correct_option = 2
 
-        keyboard.append([
-            InlineKeyboardButton(
-                option,
-                callback_data=option
-            )
-        ])
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    await message.reply_text(
-        f"🧠 {question['question']}",
-        reply_markup=reply_markup
+    await update.message.reply_poll(
+        question=question,
+        options=options,
+        type="quiz",
+        correct_option_id=correct_option,
+        explanation="Independent assortment works for non-linked genes."
     )
 
-# HANDLE MENU
+# HANDLE BUTTONS
 async def handle_message(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -87,10 +70,7 @@ async def handle_message(
 
     elif text == "🧠 Test":
 
-        await send_quiz(
-            update.message,
-            context
-        )
+        await send_poll(update, context)
 
     elif text == "💎 Premium":
 
@@ -103,47 +83,6 @@ async def handle_message(
         await update.message.reply_text(
             "Use menu buttons below 👇"
         )
-
-# QUIZ ANSWER
-async def quiz_button(update, context):
-
-    global correct_count
-    global wrong_count
-
-    query = update.callback_query
-
-    await query.answer()
-
-    selected = query.data
-
-    correct = quiz_data[0]["answer"]
-
-    if selected == correct:
-
-        correct_count += 1
-
-        await query.message.reply_text(
-            "✅ Correct Answer"
-        )
-
-    else:
-
-        wrong_count += 1
-
-        await query.message.reply_text(
-            f"❌ Wrong Answer\n✅ Correct: {correct}"
-        )
-
-    total = correct_count + wrong_count
-
-    correct_percent = (correct_count / total) * 100
-    wrong_percent = (wrong_count / total) * 100
-
-    await query.message.reply_text(
-        f"📊 Students Statistics\n\n"
-        f"✅ Correct: {correct_count} ({correct_percent:.1f}%)\n"
-        f"❌ Wrong: {wrong_count} ({wrong_percent:.1f}%)"
-    )
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
@@ -158,10 +97,6 @@ app.add_handler(
         filters.TEXT & ~filters.COMMAND,
         handle_message
     )
-)
-
-app.add_handler(
-    CallbackQueryHandler(quiz_button)
 )
 
 print("Bot Running...")
