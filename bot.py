@@ -108,13 +108,7 @@ async def quiz_button(update, context):
             f"❌ Wrong Answer\nCorrect Answer: {correct}"
         )
 
-    next_q = q_index + 1
-
-    if next_q < len(quiz_data):
-        await send_quiz(query, context, next_q)
-
-    else:
-        await query.message.reply_text("🏁 Quiz Finished")
+   await query.message.reply_text("🏁 Quiz Finished")
 
 # APP
 app = ApplicationBuilder().token(TOKEN).build()
