@@ -14,7 +14,6 @@ from telegram.ext import (
 import os
 import random
 
-# IMPORT QUESTIONS
 from units_questions import units_questions
 
 TOKEN = os.getenv("TOKEN")
@@ -22,21 +21,23 @@ TOKEN = os.getenv("TOKEN")
 # MENU
 MENU = [
     ["⚡ Units & Dimensions"],
-    ["🎲 Random Quiz"],
-    ["🏆 Leaderboard"]
+    ["🎲 Random Quiz"]
 ]
+
+# STORE USED QUESTIONS
+used_questions = []
 
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = """
 ━━━━━━━━━━━━━━
-🚀 PULSEPREP PHYSICS PYQ BOT
+🚀 PULSEPREP PYQ BOT
 ━━━━━━━━━━━━━━
 
+✅ No Repeat Questions
 📚 Chapter Wise PYQs
 🎲 Random Practice
-🏆 Leaderboard
 
 Choose Option 👇
 """
@@ -49,11 +50,32 @@ Choose Option 👇
         )
     )
 
-# SEND QUIZ
-async def send_quiz(update, questions):
+# NO REPEAT QUIZ
+async def send_quiz(update):
 
-    q = random.choice(questions)
+    global used_questions
 
+    # RESET IF ALL USED
+    if len(used_questions) == len(units_questions):
+
+        used_questions = []
+
+    # AVAILABLE QUESTIONS
+    remaining = []
+
+    for q in units_questions:
+
+        if q not in used_questions:
+
+            remaining.append(q)
+
+    # RANDOM PICK
+    q = random.choice(remaining)
+
+    # SAVE USED
+    used_questions.append(q)
+
+    # SEND POLL
     await update.message.reply_poll(
         question=f"{q['question']}\n\n📘 {q['year']}",
         options=q["options"],
@@ -70,28 +92,13 @@ async def handle_message(
 
     text = update.message.text
 
-    # UNITS & DIMENSIONS
     if text == "⚡ Units & Dimensions":
 
-        await send_quiz(
-            update,
-            units_questions
-        )
+        await send_quiz(update)
 
-    # RANDOM QUIZ
     elif text == "🎲 Random Quiz":
 
-        await send_quiz(
-            update,
-            units_questions
-        )
-
-    # LEADERBOARD
-    elif text == "🏆 Leaderboard":
-
-        await update.message.reply_text(
-            "🏆 Leaderboard Coming Soon"
-        )
+        await send_quiz(update)
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
