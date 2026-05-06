@@ -200,5 +200,135 @@ units_questions = [
         "explanation": "Force dimensions are [MLT^-2].",
         "year": "NEET PYQ"
     }
-    ]
+  ,
+
+    {
+        "question": "The dimensional formula of velocity is:",
+        "options": [
+            "[LT^-1]",
+            "[LT]",
+            "[L^2T^-1]",
+            "[MLT^-1]"
+        ],
+        "answer": 0,
+        "explanation": "Velocity = displacement / time",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of acceleration are:",
+        "options": [
+            "[LT^-2]",
+            "[LT^-1]",
+            "[MLT^-2]",
+            "[L^2T^-2]"
+        ],
+        "answer": 0,
+        "explanation": "Acceleration = velocity / time",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "The dimensional formula of density is:",
+        "options": [
+            "[ML^-3]",
+            "[ML^-1]",
+            "[MLT^-2]",
+            "[M^0L^-3]"
+        ],
+        "answer": 0,
+        "explanation": "Density = mass / volume",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Which quantity has dimensions [ML^2T^-3]?",
+        "options": [
+            "Power",
+            "Pressure",
+            "Energy",
+            "Force"
+        ],
+        "answer": 0,
+        "explanation": "Power = Work / Time",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of frequency are:",
+        "options": [
+            "[T^-1]",
+            "[LT^-1]",
+            "[MLT^-2]",
+            "[L]"
+        ],
+        "answer": 0,
+        "explanation": "Frequency = 1 / Time",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "The dimensional formula of charge is:",
+        "options": [
+            "[AT]",
+            "[MLT^-2]",
+            "[A/T]",
+            "[ML^2T^-2]"
+        ],
+        "answer": 0,
+        "explanation": "Charge = current × time",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of potential difference are:",
+        "options": [
+            "[ML^2T^-3A^-1]",
+            "[MLT^-2]",
+            "[AT]",
+            "[ML^2T^-2]"
+        ],
+        "answer": 0,
+        "explanation": "Potential = Work / Charge",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of resistance are:",
+        "options": [
+            "[ML^2T^-3A^-2]",
+            "[MLT^-2]",
+            "[AT]",
+            "[ML^-1T^-2]"
+        ],
+        "answer": 0,
+        "explanation": "Resistance = Voltage / Current",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of capacitance are:",
+        "options": [
+            "[M^-1L^-2T^4A^2]",
+            "[ML^2T^-2]",
+            "[MLT^-2]",
+            "[AT]"
+        ],
+        "answer": 0,
+        "explanation": "Capacitance = Charge / Potential",
+        "year": "NEET PYQ"
+    },
+
+    {
+        "question": "Dimensions of electric field are:",
+        "options": [
+            "[MLT^-3A^-1]",
+            "[MLT^-2]",
+            "[ML^2T^-3]",
+            "[AT]"
+        ],
+        "answer": 0,
+        "explanation": "Electric field = Force / Charge",
+        "year": "NEET PYQ"
+    }  ]
 
