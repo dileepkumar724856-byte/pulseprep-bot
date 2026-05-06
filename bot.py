@@ -1,7 +1,7 @@
 from telegram import Update, BotCommand
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN =os .getenv("TOKEN")
+TOKEN =import os .getenv("TOKEN")
 
 async def set_menu(app):
     commands = [
