@@ -1,7 +1,8 @@
+import os
 from telegram import Update, BotCommand
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN =import os .getenv("TOKEN")
+TOKEN = os .getenv("TOKEN")
 
 async def set_menu(app):
     commands = [
@@ -16,4 +17,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 app = ApplicationBuilder().token(TOKEN).build()
 
+app.add_handler(CommandHandler("start",start))
 app.post_init = set_menu
+
+app.run_polling()
