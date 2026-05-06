@@ -33,7 +33,23 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🚀 Welcome to PulsePrep NEET",
         reply_markup=ReplyKeyboardMarkup(MENU, resize_keyboard=True)
     )
+async def send_quiz(update, context, q_index=0):
 
+    question = quiz_data[q_index]
+
+    keyboard = []
+
+    for option in question["options"]:
+        keyboard.append(
+            [InlineKeyboardButton(option, callback_data=f"{q_index}|{option}")]
+        )
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        f"🧠 {question['question']}",
+        reply_markup=reply_markup
+    )
 # BUTTON HANDLER
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
@@ -76,7 +92,22 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "🚀 Welcome to PulsePrep NEET",
         reply_markup=ReplyKeyboardMarkup(MENU, resize_keyboard=True)
     )
+async def send_quiz(update, context, q_index=0):
 
+    question = quiz_data[q_index]
+
+    keyboard = []
+
+    for option in question["options"]:
+        keyboard.append(
+            [InlineKeyboardButton(option, callback_data=f"{q_index}|{option}")]
+        )
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        f"🧠 {question['question']}",
+        reply_markup=reply_markuasync 
 # BUTTON HANDLER
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = update.message.text
