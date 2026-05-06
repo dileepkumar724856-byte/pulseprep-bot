@@ -1,7 +1,6 @@
 units_qestions = [
 
 ]
-units_questions = [
 
     {
         "question": "The dimensional formula of force is:",
