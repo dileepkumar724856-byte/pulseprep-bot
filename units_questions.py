@@ -68,8 +68,8 @@ units_questions = [
         "year": "NEET PYQ"
     },
 
-{
-      ,
+
+      
 
     {
         "question": "The dimensional formula of momentum is:",
