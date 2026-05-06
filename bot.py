@@ -12,14 +12,55 @@ from telegram.ext import (
 )
 
 import os
+import random
 
 TOKEN = os.getenv("TOKEN")
 
 # MENU
 MENU = [
+    ["🎲 Random Question", "🤖 AI Doubt"],
     ["🧬 Biology", "⚡ Physics"],
-    ["🧪 Chemistry", "🏆 Leaderboard"],
-    ["💎 Premium", "❓ Help"]
+    ["🧪 Chemistry", "❓ Help"]
+]
+
+# RANDOM QUESTIONS
+questions = [
+
+    {
+        "question": "SI unit of force?",
+        "options": [
+            "Newton",
+            "Joule",
+            "Pascal",
+            "Watt"
+        ],
+        "answer": 0,
+        "explanation": "SI unit of force is Newton."
+    },
+
+    {
+        "question": "Powerhouse of cell?",
+        "options": [
+            "Nucleus",
+            "Mitochondria",
+            "Golgi Body",
+            "Ribosome"
+        ],
+        "answer": 1,
+        "explanation": "Mitochondria produces ATP."
+    },
+
+    {
+        "question": "pH of neutral water?",
+        "options": [
+            "5",
+            "7",
+            "9",
+            "14"
+        ],
+        "answer": 1,
+        "explanation": "Neutral water pH is 7."
+    }
 ]
 
 # START
@@ -27,15 +68,14 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = """
 ━━━━━━━━━━━━━━
-🚀 PULSEPREP NEET BOT
+🚀 PULSEPREP AI BOT
 ━━━━━━━━━━━━━━
 
-📚 Notes
-🧠 Daily Tests
-🏆 Leaderboard
-💎 Premium
+🎲 Random Questions
+🤖 AI Doubt Solving
+📚 Subject Tests
 
-Choose Subject 👇
+Choose Option 👇
 """
 
     await update.message.reply_text(
@@ -46,67 +86,56 @@ Choose Subject 👇
         )
     )
 
-# BIOLOGY
-async def biology(update):
+# RANDOM QUIZ
+async def random_quiz(update):
 
-    # SEND PDF
-    await update.message.reply_document(
-        document=open("biology.pdf", "rb")
-    )
-
-    # SEND QUIZ
-    await update.message.reply_poll(
-        question="Powerhouse of cell?",
-        options=[
-            "Nucleus",
-            "Mitochondria",
-            "Golgi Body",
-            "Ribosome"
-        ],
-        type="quiz",
-        correct_option_id=1,
-        explanation="Mitochondria produces ATP."
-    )
-
-# PHYSICS
-async def physics(update):
-
-    await update.message.reply_document(
-        document=open("physics.pdf", "rb")
-    )
+    q = random.choice(questions)
 
     await update.message.reply_poll(
-        question="SI unit of force?",
-        options=[
-            "Newton",
-            "Joule",
-            "Pascal",
-            "Watt"
-        ],
+        question=q["question"],
+        options=q["options"],
         type="quiz",
-        correct_option_id=0,
-        explanation="SI unit of force is Newton."
+        correct_option_id=q["answer"],
+        explanation=q["explanation"]
     )
 
-# CHEMISTRY
-async def chemistry(update):
+# AI DOUBT SOLVER
+async def ai_reply(update):
 
-    await update.message.reply_document(
-        document=open("chemistry.pdf", "rb")
-    )
+    text = update.message.text.lower()
 
-    await update.message.reply_poll(
-        question="pH of neutral water?",
-        options=[
-            "5",
-            "7",
-            "9",
-            "14"
-        ],
-        type="quiz",
-        correct_option_id=1,
-        explanation="Neutral water pH is 7."
-    )
+    # BIOLOGY
+    if "mitochondria" in text:
+
+        await update.message.reply_text(
+            "🧬 Mitochondria is called powerhouse of cell because it produces ATP energy."
+        )
+
+    elif "dna" in text:
+
+        await update.message.reply_text(
+            "🧬 DNA full form is Deoxyribo Nucleic Acid."
+        )
+
+    # PHYSICS
+    elif "force" in text:
+
+        await update.message.reply_text(
+            "⚡ Force = mass × acceleration\nSI unit = Newton"
+        )
+
+    # CHEMISTRY
+    elif "ph" in text:
+
+        await update.message.reply_text(
+            "🧪 Neutral water has pH 7."
+        )
+
+    else:
+
+        await update.message.reply_text(
+            "🤖 AI is learning...\nTry NEET related doubts."
+        )
 
 # HANDLE BUTTONS
 async def handle_message(
@@ -116,35 +145,37 @@ async def handle_message(
 
     text = update.message.text
 
-    if text == "🧬 Biology":
+    if text == "🎲 Random Question":
 
-        await biology(update)
+        await random_quiz(update)
+
+    elif text == "🤖 AI Doubt":
+
+        await update.message.reply_text(
+            "🤖 Send your NEET doubt."
+        )
+
+    elif text == "🧬 Biology":
+
+        await random_quiz(update)
 
     elif text == "⚡ Physics":
 
-        await physics(update)
+        await random_quiz(update)
 
     elif text == "🧪 Chemistry":
 
-        await chemistry(update)
-
-    elif text == "🏆 Leaderboard":
-
-        await update.message.reply_text(
-            "🏆 Leaderboard Coming Soon"
-        )
-
-    elif text == "💎 Premium":
-
-        await update.message.reply_text(
-            "💎 Premium Coming Soon"
-        )
+        await random_quiz(update)
 
     elif text == "❓ Help":
 
         await update.message.reply_text(
-            "Choose Any Subject Button 👇"
+            "Use buttons below 👇"
         )
+
+    else:
+
+        await ai_reply(update)
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
