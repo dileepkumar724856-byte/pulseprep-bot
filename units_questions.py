@@ -200,6 +200,5 @@ units_questions = [
         "explanation": "Force dimensions are [MLT^-2].",
         "year": "NEET PYQ"
     }
-
-]
+    ]
 
