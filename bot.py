@@ -1,12 +1,19 @@
-from telegram import Update
+from telegram import Update, BotCommand
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
 
-TOKEN = "8251165215:AAEaIMpwsbhQ45lsg_YuvPiUThtoF5MgzKg"
+TOKEN = "YOUR_TOKEN"
+
+async def set_menu(app):
+    commands = [
+        BotCommand("start", "🚀 Start"),
+        BotCommand("notes", "📚 Notes"),
+        BotCommand("quiz", "🧠 Quiz"),
+    ]
+    await app.bot.set_my_commands(commands)
 
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text("🔥 PulsePrep NEET Bot Ready!")
+    await update.message.reply_text("Welcome 🚀")
 
 app = ApplicationBuilder().token(TOKEN).build()
-app.add_handler(CommandHandler("start", start))
 
-app.run_polling()
+app.post_init = set_menu
