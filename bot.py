@@ -24,29 +24,20 @@ quiz_data = [
         "question": "Human heart has how many chambers?",
         "options": ["2", "3", "4", "5"],
         "answer": "4"
-    },
-    {
-        "question": "DNA full form?",
-        "options": [
-            "Deoxyribo Nucleic Acid",
-            "Dynamic Network Acid",
-            "Double Nitrogen Acid",
-            "None"
-        ],
-        "answer": "Deoxyribo Nucleic Acid"
     }
 ]
 
-# USER SCORES
-user_data = {}
+# STATS
+correct_count = 0
+wrong_count = 0
 
-# MENU BUTTONS
+# MENU
 MENU = [
     ["📚 Notes", "🧠 Test"],
     ["💎 Premium", "❓ Help"]
 ]
 
-# START COMMAND
+# START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await update.message.reply_text(
@@ -58,9 +49,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 # SEND QUIZ
-async def send_quiz(message, context, q_index=0):
+async def send_quiz(message, context):
 
-    question = quiz_data[q_index]
+    question = quiz_data[0]
 
     keyboard = []
 
@@ -69,7 +60,7 @@ async def send_quiz(message, context, q_index=0):
         keyboard.append([
             InlineKeyboardButton(
                 option,
-                callback_data=f"{q_index}|{option}"
+                callback_data=option
             )
         ])
 
@@ -80,7 +71,7 @@ async def send_quiz(message, context, q_index=0):
         reply_markup=reply_markup
     )
 
-# HANDLE MENU BUTTONS
+# HANDLE MENU
 async def handle_message(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -113,31 +104,23 @@ async def handle_message(
             "Use menu buttons below 👇"
         )
 
-# QUIZ BUTTON HANDLER
+# QUIZ ANSWER
 async def quiz_button(update, context):
+
+    global correct_count
+    global wrong_count
 
     query = update.callback_query
 
     await query.answer()
 
-    user_id = query.from_user.id
+    selected = query.data
 
-    if user_id not in user_data:
+    correct = quiz_data[0]["answer"]
 
-        user_data[user_id] = 0
-
-    data = query.data.split("|")
-
-    q_index = int(data[0])
-
-    selected = data[1]
-
-    correct = quiz_data[q_index]["answer"]
-
-    # CHECK ANSWER
     if selected == correct:
 
-        user_data[user_id] += 1
+        correct_count += 1
 
         await query.message.reply_text(
             "✅ Correct Answer"
@@ -145,30 +128,22 @@ async def quiz_button(update, context):
 
     else:
 
+        wrong_count += 1
+
         await query.message.reply_text(
             f"❌ Wrong Answer\n✅ Correct: {correct}"
         )
 
-    # NEXT QUESTION
-    next_q = q_index + 1
+    total = correct_count + wrong_count
 
-    if next_q < len(quiz_data):
+    correct_percent = (correct_count / total) * 100
+    wrong_percent = (wrong_count / total) * 100
 
-        await send_quiz(
-            query.message,
-            context,
-            next_q
-        )
-
-    else:
-
-        score = user_data[user_id]
-
-        await query.message.reply_text(
-            f"🏁 Quiz Finished\n🎯 Score: {score}/{len(quiz_data)}"
-        )
-
-        user_data[user_id] = 0
+    await query.message.reply_text(
+        f"📊 Students Statistics\n\n"
+        f"✅ Correct: {correct_count} ({correct_percent:.1f}%)\n"
+        f"❌ Wrong: {wrong_count} ({wrong_percent:.1f}%)"
+    )
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
