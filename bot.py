@@ -7,6 +7,7 @@ from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
+    PollAnswerHandler,
     filters,
     ContextTypes
 )
@@ -16,12 +17,16 @@ import random
 
 TOKEN = os.getenv("TOKEN")
 
-# MAIN MENU
+# MENU
 MENU = [
     ["🧬 Biology", "⚡ Physics"],
     ["🧪 Chemistry", "🎲 Daily Quiz"],
-    ["🏆 Leaderboard", "❓ Help"]
+    ["🏆 Leaderboard", "🔥 My Streak"]
 ]
+
+# USER DATA
+user_scores = {}
+user_streaks = {}
 
 # QUESTION BANK
 biology_questions = [
@@ -35,20 +40,9 @@ biology_questions = [
             "Golgi Body"
         ],
         "answer": 1,
-        "explanation": "Mitochondria produces ATP energy."
-    },
-
-    {
-        "question": "DNA full form?",
-        "options": [
-            "Deoxyribo Nucleic Acid",
-            "Dynamic Network Acid",
-            "Double Nitrogen Acid",
-            "None"
-        ],
-        "answer": 0,
-        "explanation": "DNA full form is Deoxyribo Nucleic Acid."
+        "explanation": "Mitochondria produces ATP."
     }
+
 ]
 
 physics_questions = [
@@ -58,24 +52,13 @@ physics_questions = [
         "options": [
             "Newton",
             "Joule",
-            "Pascal",
-            "Watt"
+            "Watt",
+            "Pascal"
         ],
         "answer": 0,
         "explanation": "SI unit of force is Newton."
-    },
-
-    {
-        "question": "Speed of light?",
-        "options": [
-            "3×10^8 m/s",
-            "5×10^8 m/s",
-            "1×10^8 m/s",
-            "7×10^8 m/s"
-        ],
-        "answer": 0,
-        "explanation": "Speed of light is 3×10^8 m/s."
     }
+
 ]
 
 chemistry_questions = [
@@ -90,32 +73,24 @@ chemistry_questions = [
         ],
         "answer": 1,
         "explanation": "Neutral water pH is 7."
-    },
-
-    {
-        "question": "Atomic number of Carbon?",
-        "options": [
-            "6",
-            "8",
-            "12",
-            "14"
-        ],
-        "answer": 0,
-        "explanation": "Atomic number of carbon is 6."
     }
+
 ]
+
+# STORE ACTIVE POLLS
+active_polls = {}
 
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = """
 ━━━━━━━━━━━━━━
-🚀 PULSEPREP DAILY QUIZ BOT
+🚀 PULSEPREP QUIZ BOT
 ━━━━━━━━━━━━━━
 
-🧠 Daily Random Questions
-📚 Subject Wise Practice
-🏆 Leaderboard System
+🧠 Daily Practice
+🏆 Leaderboard
+🔥 Streak System
 
 Choose Subject 👇
 """
@@ -129,19 +104,53 @@ Choose Subject 👇
     )
 
 # SEND QUIZ
-async def send_random_quiz(update, questions):
+async def send_quiz(update, questions):
 
     q = random.choice(questions)
 
-    await update.message.reply_poll(
+    message = await update.message.reply_poll(
         question=q["question"],
         options=q["options"],
         type="quiz",
         correct_option_id=q["answer"],
-        explanation=q["explanation"]
+        explanation=q["explanation"],
+        is_anonymous=False
     )
 
-# HANDLE MENU
+    active_polls[message.poll.id] = q
+
+# HANDLE POLL ANSWERS
+async def receive_poll_answer(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    answer = update.poll_answer
+
+    user_id = answer.user.id
+
+    poll_id = answer.poll_id
+
+    selected = answer.option_ids[0]
+
+    if user_id not in user_scores:
+        user_scores[user_id] = 0
+
+    if user_id not in user_streaks:
+        user_streaks[user_id] = 0
+
+    if poll_id in active_polls:
+
+        correct = active_polls[poll_id]["answer"]
+
+        # CORRECT ANSWER
+        if selected == correct:
+
+            user_scores[user_id] += 1
+
+            user_streaks[user_id] += 1
+
+# HANDLE BUTTONS
 async def handle_message(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -152,7 +161,7 @@ async def handle_message(
     # BIOLOGY
     if text == "🧬 Biology":
 
-        await send_random_quiz(
+        await send_quiz(
             update,
             biology_questions
         )
@@ -160,7 +169,7 @@ async def handle_message(
     # PHYSICS
     elif text == "⚡ Physics":
 
-        await send_random_quiz(
+        await send_quiz(
             update,
             physics_questions
         )
@@ -168,12 +177,12 @@ async def handle_message(
     # CHEMISTRY
     elif text == "🧪 Chemistry":
 
-        await send_random_quiz(
+        await send_quiz(
             update,
             chemistry_questions
         )
 
-    # DAILY RANDOM QUIZ
+    # DAILY QUIZ
     elif text == "🎲 Daily Quiz":
 
         all_questions = (
@@ -182,7 +191,7 @@ async def handle_message(
             chemistry_questions
         )
 
-        await send_random_quiz(
+        await send_quiz(
             update,
             all_questions
         )
@@ -190,15 +199,45 @@ async def handle_message(
     # LEADERBOARD
     elif text == "🏆 Leaderboard":
 
-        await update.message.reply_text(
-            "🏆 Leaderboard Coming Soon"
+        if not user_scores:
+
+            await update.message.reply_text(
+                "No quiz attempts yet."
+            )
+
+            return
+
+        sorted_users = sorted(
+            user_scores.items(),
+            key=lambda x: x[1],
+            reverse=True
         )
 
-    # HELP
-    elif text == "❓ Help":
+        text_data = "🏆 Leaderboard\n\n"
+
+        rank = 1
+
+        for user_id, score in sorted_users[:5]:
+
+            text_data += (
+                f"{rank}. User {user_id} → {score} points\n"
+            )
+
+            rank += 1
 
         await update.message.reply_text(
-            "Choose Subject Buttons 👇"
+            text_data
+        )
+
+    # STREAK
+    elif text == "🔥 My Streak":
+
+        user_id = update.effective_user.id
+
+        streak = user_streaks.get(user_id, 0)
+
+        await update.message.reply_text(
+            f"🔥 Your Current Streak: {streak}"
         )
 
 # BUILD APP
@@ -214,6 +253,10 @@ app.add_handler(
         filters.TEXT & ~filters.COMMAND,
         handle_message
     )
+)
+
+app.add_handler(
+    PollAnswerHandler(receive_poll_answer)
 )
 
 print("Bot Running...")
