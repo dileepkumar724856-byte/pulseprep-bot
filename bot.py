@@ -1,6 +1,24 @@
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
+from telegram import (
+    Update,
+    ReplyKeyboardMarkup,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
+
+from telegram.ext import (
+    ApplicationBuilder,
+    CommandHandler,
+    MessageHandler,
+    CallbackQueryHandler,
+    filters,
+    ContextTypes
+)
+
 import os
+
+TOKEN = os.getenv("TOKEN")
+
+# QUIZ DATA
 quiz_data = [
     {
         "question": "Human heart has how many chambers?",
@@ -19,9 +37,7 @@ quiz_data = [
     }
 ]
 
-TOKEN = os.getenv("TOKEN")
-
-# MENU BUTTONS
+# MENU
 MENU = [
     ["📚 Notes", "🧠 Test"],
     ["💎 Premium", "❓ Help"]
@@ -29,10 +45,13 @@ MENU = [
 
 # START
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "🚀 Welcome to PulsePrep NEET",
         reply_markup=ReplyKeyboardMarkup(MENU, resize_keyboard=True)
     )
+
+# SEND QUIZ
 async def send_quiz(update, context, q_index=0):
 
     question = quiz_data[q_index]
@@ -50,15 +69,17 @@ async def send_quiz(update, context, q_index=0):
         f"🧠 {question['question']}",
         reply_markup=reply_markup
     )
-# BUTTON HANDLER
+
+# BUTTON MENU HANDLER
 async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     text = update.message.text
 
     if text == "📚 Notes":
         await update.message.reply_text("📚 Biology Notes Coming Soon")
 
     elif text == "🧠 Test":
-        await update.message.reply_text("🧠 Daily Test Coming Soon")
+        await send_quiz(update, context)
 
     elif text == "💎 Premium":
         await update.message.reply_text("💎 Premium access soon")
@@ -66,110 +87,46 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif text == "❓ Help":
         await update.message.reply_text("Use buttons below 👇")
 
-# APP
-app = ApplicationBuilder().token(TOKEN).build()
+# QUIZ BUTTON CHECK
+async def quiz_button(update, context):
 
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+    query = update.callback_query
+    await query.answer()
 
-app.run_polling()
+    data = query.data.split("|")
 
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import os
+    q_index = int(data[0])
+    selected = data[1]
 
-TOKEN = os.getenv("TOKEN")
+    correct = quiz_data[q_index]["answer"]
 
-# MENU BUTTONS
-MENU = [
-    ["📚 Notes", "🧠 Test"],
-    ["💎 Premium", "❓ Help"]
-]
+    if selected == correct:
+        await query.message.reply_text("✅ Correct Answer")
 
-# START
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 Welcome to PulsePrep NEET",
-        reply_markup=ReplyKeyboardMarkup(MENU, resize_keyboard=True)
-    )
-async def send_quiz(update, context, q_index=0):
-
-    question = quiz_data[q_index]
-
-    keyboard = []
-
-    for option in question["options"]:
-        keyboard.append(
-            [InlineKeyboardButton(option, callback_data=f"{q_index}|{option}")]
+    else:
+        await query.message.reply_text(
+            f"❌ Wrong Answer\nCorrect Answer: {correct}"
         )
 
-    reply_markup = InlineKeyboardMarkup(keyboard)
+    next_q = q_index + 1
 
-    await update.message.reply_text(
-        f"🧠 {question['question']}",
-        reply_markup=reply_markuasync 
-# BUTTON HANDLER
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
+    if next_q < len(quiz_data):
+        await send_quiz(query, context, next_q)
 
-    if text == "📚 Notes":
-        await update.message.reply_text("📚 Biology Notes Coming Soon")
-
-    elif text == "🧠 Test":
-        await update.message.reply_text("🧠 Daily Test Coming Soon")
-
-    elif text == "💎 Premium":
-        await update.message.reply_text("💎 Premium access soon")
-
-    elif text == "❓ Help":
-        await update.message.reply_text("Use buttons below 👇")
+    else:
+        await query.message.reply_text("🏁 Quiz Finished")
 
 # APP
 app = ApplicationBuilder().token(TOKEN).build()
 
 app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
 
-app.run_polling()
-from telegram import Update, ReplyKeyboardMarkup
-from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters, ContextTypes
-import os
+app.add_handler(
+    MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message)
+)
 
-TOKEN = os.getenv("TOKEN")
+app.add_handler(CallbackQueryHandler(quiz_button))
 
-# MENU BUTTONS
-MENU = [
-    ["📚 Notes", "🧠 Test"],
-    ["💎 Premium", "❓ Help"]
-]
-
-# START
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    await update.message.reply_text(
-        "🚀 Welcome to PulsePrep NEET",
-        reply_markup=ReplyKeyboardMarkup(MENU, resize_keyboard=True)
-    )
-
-# BUTTON HANDLER
-async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    text = update.message.text
-
-    if text == "📚 Notes":
-        await update.message.reply_text("📚 Biology Notes Coming Soon")
-
-    elif text == "🧠 Test":
-        await update.message.reply_text("🧠 Daily Test Coming Soon")
-
-    elif text == "💎 Premium":
-        await update.message.reply_text("💎 Premium access soon")
-
-    elif text == "❓ Help":
-        await update.message.reply_text("Use buttons below 👇")
-
-# APP
-app = ApplicationBuilder().token(TOKEN).build()
-
-app.add_handler(CommandHandler("start", start))
-app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, handle_message))
+print("Bot Running...")
 
 app.run_polling()
