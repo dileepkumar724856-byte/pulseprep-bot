@@ -330,5 +330,110 @@ units_questions = [
         "answer": 0,
         "explanation": "Electric field = Force / Charge",
         "year": "NEET PYQ"
-    }  ]
+    },
 
+,
+
+    {
+        "question": "The unit of thermal conductivity is:",
+        "options": [
+            "W m^-1 K^-1",
+            "J m K^-1",
+            "J m^-1 K^-1",
+            "W m K^-1"
+        ],
+        "answer": 0,
+        "explanation": "SI unit of thermal conductivity is W m^-1 K^-1",
+        "year": "2019"
+    },
+
+    {
+        "question": "The damping force on an oscillator is directly proportional to velocity. The unit of proportionality constant is:",
+        "options": [
+            "kg m s^-1",
+            "kg m s^-2",
+            "kg s^-1",
+            "kg s"
+        ],
+        "answer": 2,
+        "explanation": "Since F = kv and F has unit kg m s^-2.",
+        "year": "2012"
+    },
+
+    {
+        "question": "The unit of permittivity of free space ε₀ is:",
+        "options": [
+            "coulomb/newton-metre",
+            "newton-metre²/coulomb²",
+            "coulomb²/newton-metre²",
+            "coulomb²/(newton-metre²)"
+        ],
+        "answer": 3,
+        "explanation": "SI unit of permittivity is C² N^-1 m^-2.",
+        "year": "2004"
+    },
+
+    {
+        "question": "The errors in measurement which arise due to unpredictable fluctuations in temperature and voltage supply are:",
+        "options": [
+            "Least count errors",
+            "Random errors",
+            "Instrumental errors",
+            "Personal errors"
+        ],
+        "answer": 1,
+        "explanation": "Random errors occur due to unpredictable variations.",
+        "year": "2023"
+    },
+
+    {
+        "question": "In an experiment, percentage errors in A, B, C and D are 1%, 2%, 3% and 4% respectively. Maximum percentage error in X = (A²B^(1/2))/(C^(1/3)D³) will be:",
+        "options": [
+            "10%",
+            "13%",
+            "16%",
+            "-10%"
+        ],
+        "answer": 1,
+        "explanation": "Total error = 2×1 + (1/2×2) + (1/3×3) + (3×4) = 13%",
+        "year": "2019"
+    },
+
+    {
+        "question": "If the error in measurement of radius of a sphere is 2%, then error in determination of volume will be:",
+        "options": [
+            "8%",
+            "2%",
+            "4%",
+            "6%"
+        ],
+        "answer": 3,
+        "explanation": "Volume ∝ r³ so percentage error = 3 × 2 = 6%",
+        "year": "2008"
+    },
+
+    {
+        "question": "Percentage errors in measurement of mass and speed are 2% and 3% respectively. Error in kinetic energy will be:",
+        "options": [
+            "8%",
+            "2%",
+            "12%",
+            "10%"
+        ],
+        "answer": 0,
+        "explanation": "KE = 1/2 mv² so error = 2 + 2×3 = 8%",
+        "year": "1995"
+    },
+
+    {
+        "question": "The area of a rectangular field of length 55.3 m and breadth 25 m after correct significant figures is:",
+        "options": [
+            "138 × 10²",
+            "1382",
+            "1382.5",
+            "1.4 × 10³"
+        ],
+        "answer": 3,
+        "explanation": "Result should have 2 significant figures.",
+        "year": "2022"
+    }
