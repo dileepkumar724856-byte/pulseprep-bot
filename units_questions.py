@@ -199,7 +199,7 @@ units_qestions = [
         "explanation": "Force dimensions are [MLT^-2].",
         "year": "NEET PYQ"
     }
-  ,
+  
 
     {
         "question": "The dimensional formula of velocity is:",
@@ -331,7 +331,7 @@ units_qestions = [
         "year": "NEET PYQ"
     },
 
-,
+
 
     {
         "question": "The unit of thermal conductivity is:",
