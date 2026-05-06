@@ -1,66 +1,27 @@
 from telegram import (
     Update,
-    ReplyKeyboardMarkup
+    ReplyKeyboardMarkup,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
 )
 
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
+    CallbackQueryHandler,
     filters,
     ContextTypes
 )
 
 import os
-import random
 
 TOKEN = os.getenv("TOKEN")
 
-# MENU
+# MAIN MENU
 MENU = [
-    ["🎲 Random Question", "🤖 AI Doubt"],
-    ["🧬 Biology", "⚡ Physics"],
-    ["🧪 Chemistry", "❓ Help"]
-]
-
-# RANDOM QUESTIONS
-questions = [
-
-    {
-        "question": "SI unit of force?",
-        "options": [
-            "Newton",
-            "Joule",
-            "Pascal",
-            "Watt"
-        ],
-        "answer": 0,
-        "explanation": "SI unit of force is Newton."
-    },
-
-    {
-        "question": "Powerhouse of cell?",
-        "options": [
-            "Nucleus",
-            "Mitochondria",
-            "Golgi Body",
-            "Ribosome"
-        ],
-        "answer": 1,
-        "explanation": "Mitochondria produces ATP."
-    },
-
-    {
-        "question": "pH of neutral water?",
-        "options": [
-            "5",
-            "7",
-            "9",
-            "14"
-        ],
-        "answer": 1,
-        "explanation": "Neutral water pH is 7."
-    }
+    ["📚 Notes", "🎲 Quiz"],
+    ["💎 Premium", "❓ Help"]
 ]
 
 # START
@@ -68,12 +29,12 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     text = """
 ━━━━━━━━━━━━━━
-🚀 PULSEPREP AI BOT
+🚀 PULSEPREP NOTES BOT
 ━━━━━━━━━━━━━━
 
-🎲 Random Questions
-🤖 AI Doubt Solving
-📚 Subject Tests
+📚 Chapter Notes
+🎲 Daily Quiz
+💎 Premium Access
 
 Choose Option 👇
 """
@@ -86,58 +47,126 @@ Choose Option 👇
         )
     )
 
-# RANDOM QUIZ
-async def random_quiz(update):
+# NOTES MENU
+async def notes_menu(update):
 
-    q = random.choice(questions)
+    keyboard = [
 
-    await update.message.reply_poll(
-        question=q["question"],
-        options=q["options"],
-        type="quiz",
-        correct_option_id=q["answer"],
-        explanation=q["explanation"]
+        [
+            InlineKeyboardButton(
+                "🧬 Biology",
+                callback_data="bio"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "⚡ Physics",
+                callback_data="physics"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🧪 Chemistry",
+                callback_data="chem"
+            )
+        ]
+
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await update.message.reply_text(
+        "📚 Select Subject",
+        reply_markup=reply_markup
     )
 
-# AI DOUBT SOLVER
-async def ai_reply(update):
+# BIOLOGY CHAPTERS
+async def biology_menu(query):
 
-    text = update.message.text.lower()
+    keyboard = [
 
-    # BIOLOGY
-    if "mitochondria" in text:
+        [
+            InlineKeyboardButton(
+                "🧬 Cell",
+                callback_data="cell"
+            )
+        ],
 
-        await update.message.reply_text(
-            "🧬 Mitochondria is called powerhouse of cell because it produces ATP energy."
-        )
+        [
+            InlineKeyboardButton(
+                "🧬 Genetics",
+                callback_data="genetics"
+            )
+        ]
 
-    elif "dna" in text:
+    ]
 
-        await update.message.reply_text(
-            "🧬 DNA full form is Deoxyribo Nucleic Acid."
-        )
+    reply_markup = InlineKeyboardMarkup(keyboard)
 
-    # PHYSICS
-    elif "force" in text:
+    await query.message.reply_text(
+        "🧬 Biology Chapters",
+        reply_markup=reply_markup
+    )
 
-        await update.message.reply_text(
-            "⚡ Force = mass × acceleration\nSI unit = Newton"
-        )
+# PHYSICS CHAPTERS
+async def physics_menu(query):
 
-    # CHEMISTRY
-    elif "ph" in text:
+    keyboard = [
 
-        await update.message.reply_text(
-            "🧪 Neutral water has pH 7."
-        )
+        [
+            InlineKeyboardButton(
+                "⚡ Current Electricity",
+                callback_data="current"
+            )
+        ],
 
-    else:
+        [
+            InlineKeyboardButton(
+                "⚡ Ray Optics",
+                callback_data="optics"
+            )
+        ]
 
-        await update.message.reply_text(
-            "🤖 AI is learning...\nTry NEET related doubts."
-        )
+    ]
 
-# HANDLE BUTTONS
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.message.reply_text(
+        "⚡ Physics Chapters",
+        reply_markup=reply_markup
+    )
+
+# CHEMISTRY CHAPTERS
+async def chemistry_menu(query):
+
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🧪 Chemical Bonding",
+                callback_data="bonding"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🧪 Thermodynamics",
+                callback_data="thermo"
+            )
+        ]
+
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    await query.message.reply_text(
+        "🧪 Chemistry Chapters",
+        reply_markup=reply_markup
+    )
+
+# HANDLE MAIN MENU
 async def handle_message(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -145,37 +174,101 @@ async def handle_message(
 
     text = update.message.text
 
-    if text == "🎲 Random Question":
+    if text == "📚 Notes":
 
-        await random_quiz(update)
+        await notes_menu(update)
 
-    elif text == "🤖 AI Doubt":
+    elif text == "🎲 Quiz":
 
-        await update.message.reply_text(
-            "🤖 Send your NEET doubt."
+        await update.message.reply_poll(
+            question="SI unit of force?",
+            options=[
+                "Newton",
+                "Joule",
+                "Watt",
+                "Pascal"
+            ],
+            type="quiz",
+            correct_option_id=0,
+            explanation="SI unit of force is Newton."
         )
 
-    elif text == "🧬 Biology":
+    elif text == "💎 Premium":
 
-        await random_quiz(update)
-
-    elif text == "⚡ Physics":
-
-        await random_quiz(update)
-
-    elif text == "🧪 Chemistry":
-
-        await random_quiz(update)
+        await update.message.reply_text(
+            "💎 Premium Coming Soon"
+        )
 
     elif text == "❓ Help":
 
         await update.message.reply_text(
-            "Use buttons below 👇"
+            "Use Buttons Below 👇"
         )
 
-    else:
+# HANDLE INLINE BUTTONS
+async def button_click(update, context):
 
-        await ai_reply(update)
+    query = update.callback_query
+
+    await query.answer()
+
+    data = query.data
+
+    # SUBJECT MENUS
+    if data == "bio":
+
+        await biology_menu(query)
+
+    elif data == "physics":
+
+        await physics_menu(query)
+
+    elif data == "chem":
+
+        await chemistry_menu(query)
+
+    # PDF SEND
+    elif data == "cell":
+
+        await query.message.reply_document(
+            document=open("biology.pdf", "rb"),
+            caption="🧬 Cell Notes"
+        )
+
+    elif data == "genetics":
+
+        await query.message.reply_document(
+            document=open("biology.pdf", "rb"),
+            caption="🧬 Genetics Notes"
+        )
+
+    elif data == "current":
+
+        await query.message.reply_document(
+            document=open("physics.pdf", "rb"),
+            caption="⚡ Current Electricity Notes"
+        )
+
+    elif data == "optics":
+
+        await query.message.reply_document(
+            document=open("physics.pdf", "rb"),
+            caption="⚡ Ray Optics Notes"
+        )
+
+    elif data == "bonding":
+
+        await query.message.reply_document(
+            document=open("chemistry.pdf", "rb"),
+            caption="🧪 Chemical Bonding Notes"
+        )
+
+    elif data == "thermo":
+
+        await query.message.reply_document(
+            document=open("chemistry.pdf", "rb"),
+            caption="🧪 Thermodynamics Notes"
+        )
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
@@ -190,6 +283,10 @@ app.add_handler(
         filters.TEXT & ~filters.COMMAND,
         handle_message
     )
+)
+
+app.add_handler(
+    CallbackQueryHandler(button_click)
 )
 
 print("Bot Running...")
