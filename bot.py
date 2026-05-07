@@ -17,6 +17,8 @@ from telegram.ext import (
 import os
 import random
 
+from features.elite import elite_zone
+
 from questions.units_questions import units_questions
 
 TOKEN = os.getenv("TOKEN")
@@ -153,68 +155,7 @@ async def streak(update):
     )
 
 # ELITE ZONE
-async def elite_zone(update):
 
-    keyboard = [
-
-        [
-            InlineKeyboardButton(
-                "🧠 AI Mentor",
-                callback_data="mentor"
-            )
-        ],
-
-        [
-            InlineKeyboardButton(
-                "📚 AIR Notes Vault",
-                callback_data="vault"
-            )
-        ],
-
-        [
-            InlineKeyboardButton(
-                "🎯 Full Mock Tests",
-                callback_data="mock"
-            )
-        ],
-
-        [
-            InlineKeyboardButton(
-                "📊 Rank Booster",
-                callback_data="rank"
-            )
-        ],
-
-        [
-            InlineKeyboardButton(
-                "🔥 Daily Mission",
-                callback_data="mission"
-            )
-        ]
-
-    ]
-
-    reply_markup = InlineKeyboardMarkup(keyboard)
-
-    text = """
-━━━━━━━━━━━━━━
-💎 ELITE ZONE
-━━━━━━━━━━━━━━
-
-🚀 Premium Student Dashboard
-
-🔒 AIR Notes
-🔒 Full Mock Tests
-🔒 AI Mentor
-🔒 Rank Booster
-
-Choose Elite Feature 👇
-"""
-
-    await update.message.reply_text(
-        text,
-        reply_markup=reply_markup
-    )
 
 # ELITE BUTTONS
 async def elite_buttons(update, context):
