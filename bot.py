@@ -16,6 +16,8 @@ from telegram.ext import (
 
 import os
 import random
+
+from features.notes import notes_hub
 from features.leaderboard import leaderboard
 from features.quiz import send_quiz
 
@@ -84,21 +86,6 @@ async def daily_challenge(update):
     await send_quiz(update)
 
 # NOTES HUB
-async def notes_hub(update):
-
-    text = """
-📚 NOTES HUB
-
-⚡ Physics Notes
-🧬 Biology Notes
-🧪 Chemistry Notes
-
-🔥 PYQ Notes
-🧠 Formula Sheets
-📘 Short Notes
-"""
-
-    await update.message.reply_text(text)
 
 # LEADERBOARD
 await leaderboard(update, user_xp)
