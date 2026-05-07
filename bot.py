@@ -1,12 +1,15 @@
 from telegram import (
     Update,
-    ReplyKeyboardMarkup
+    ReplyKeyboardMarkup,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
 )
 
 from telegram.ext import (
     ApplicationBuilder,
     CommandHandler,
     MessageHandler,
+    CallbackQueryHandler,
     filters,
     ContextTypes
 )
@@ -18,7 +21,7 @@ from units_questions import units_questions
 
 TOKEN = os.getenv("TOKEN")
 
-# MENU
+# MAIN MENU
 MENU = [
     ["⚡ Units & Dimensions", "🎯 Daily Challenge"],
     ["📚 Notes Hub", "🏆 AIR Leaderboard"],
@@ -41,13 +44,13 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 👋 Welcome {user}
 
-🎯 Daily NEET Challenges
+🎯 Daily Challenges
 📚 Chapter Wise PYQs
-🏆 AIR Style Leaderboard
-🔥 Streak & XP System
-💎 Elite Experience
+🏆 AIR Leaderboard
+🔥 XP & Streak System
+💎 Elite Dashboard
 
-Choose Option Below 👇
+Choose Option 👇
 """
 
     await update.message.reply_text(
@@ -58,7 +61,7 @@ Choose Option Below 👇
         )
     )
 
-# SEND QUIZ
+# QUIZ
 async def send_quiz(update):
 
     q = random.choice(units_questions)
@@ -75,15 +78,15 @@ async def send_quiz(update):
 # DAILY CHALLENGE
 async def daily_challenge(update):
 
-    await update.message.reply_text(
-        """
+    text = """
 🔥 DAILY CHALLENGE 🔥
 
-🎯 Complete 5 MCQs Today
+🎯 Solve 5 MCQs
 ⭐ Reward = +50 XP
 🏆 Beat Other Students
 """
-    )
+
+    await update.message.reply_text(text)
 
     await send_quiz(update)
 
@@ -100,8 +103,6 @@ async def notes_hub(update):
 🔥 PYQ Notes
 🧠 Formula Sheets
 📘 Short Notes
-
-More Notes Coming Soon...
 """
 
     await update.message.reply_text(text)
@@ -146,7 +147,7 @@ async def streak(update):
         f"""
 🔥 YOUR STREAK 🔥
 
-⚡ Current Streak: {streak} Days
+⚡ Current Streak: {streak}
 ⭐ Keep Practicing Daily
 """
     )
@@ -154,20 +155,151 @@ async def streak(update):
 # ELITE ZONE
 async def elite_zone(update):
 
-    text = """
-💎 ELITE ZONE 💎
+    keyboard = [
 
-🔒 AIR Batch
-🔒 Elite Notes
+        [
+            InlineKeyboardButton(
+                "🧠 AI Mentor",
+                callback_data="mentor"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "📚 AIR Notes Vault",
+                callback_data="vault"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🎯 Full Mock Tests",
+                callback_data="mock"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "📊 Rank Booster",
+                callback_data="rank"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🔥 Daily Mission",
+                callback_data="mission"
+            )
+        ]
+
+    ]
+
+    reply_markup = InlineKeyboardMarkup(keyboard)
+
+    text = """
+━━━━━━━━━━━━━━
+💎 ELITE ZONE
+━━━━━━━━━━━━━━
+
+🚀 Premium Student Dashboard
+
+🔒 AIR Notes
 🔒 Full Mock Tests
 🔒 AI Mentor
+🔒 Rank Booster
 
-🚀 Premium Features Coming Soon
+Choose Elite Feature 👇
 """
 
-    await update.message.reply_text(text)
+    await update.message.reply_text(
+        text,
+        reply_markup=reply_markup
+    )
 
-# HANDLE BUTTONS
+# ELITE BUTTONS
+async def elite_buttons(update, context):
+
+    query = update.callback_query
+
+    await query.answer()
+
+    data = query.data
+
+    # AI MENTOR
+    if data == "mentor":
+
+        await query.message.reply_text(
+            """
+🧠 AI MENTOR
+
+🚀 Ask Your NEET Doubts
+📚 Smart Explanations
+⚡ Fast Learning
+
+Feature Coming Soon...
+"""
+        )
+
+    # VAULT
+    elif data == "vault":
+
+        await query.message.reply_text(
+            """
+📚 AIR NOTES VAULT
+
+🔒 Topper Notes
+🔒 Formula Sheets
+🔒 PYQ PDFs
+🔒 Revision Notes
+
+Elite Notes Coming Soon...
+"""
+        )
+
+    # MOCK TEST
+    elif data == "mock":
+
+        await query.message.reply_text(
+            """
+🎯 FULL MOCK TESTS
+
+⚡ Physics Test
+🧪 Chemistry Test
+🧬 Biology Test
+
+🚀 NEET Simulation Mode
+"""
+        )
+
+    # RANK BOOSTER
+    elif data == "rank":
+
+        await query.message.reply_text(
+            """
+📊 RANK BOOSTER
+
+📈 Accuracy Tracking
+📉 Weak Topic Analysis
+🏆 AIR Strategy
+
+Coming Soon...
+"""
+        )
+
+    # DAILY MISSION
+    elif data == "mission":
+
+        await query.message.reply_text(
+            """
+🔥 DAILY MISSION
+
+🎯 Solve 20 MCQs
+⭐ Reward = +100 XP
+🏆 Maintain Your Streak
+"""
+        )
+
+# HANDLE MENU
 async def handle_message(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
@@ -235,6 +367,10 @@ app.add_handler(
         filters.TEXT & ~filters.COMMAND,
         handle_message
     )
+)
+
+app.add_handler(
+    CallbackQueryHandler(elite_buttons)
 )
 
 print("⚡ PulsePrep Elite Running...")
