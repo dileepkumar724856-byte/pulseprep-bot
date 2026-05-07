@@ -101,7 +101,7 @@ async def elite_buttons(update, context):
     # AI MENTOR
     if data == "mentor":
 
-        await query.message.reply_text(
+        'await' query.message.reply_text(
             """
 🧠 AI MENTOR
 
