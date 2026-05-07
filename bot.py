@@ -17,6 +17,8 @@ from telegram.ext import (
 import os
 import random
 
+from features.quiz import send_quiz
+
 from features.elite import elite_zone
 
 from questions.units_questions import units_questions
@@ -64,18 +66,7 @@ Choose Option 👇
     )
 
 # QUIZ
-async def send_quiz(update):
 
-    q = random.choice(units_questions)
-
-    await update.message.reply_poll(
-        question=f"⚡ {q['question']}\n\n📘 {q['year']}",
-        options=q["options"],
-        type="quiz",
-        correct_option_id=q["answer"],
-        explanation=f"✅ {q['explanation']}",
-        is_anonymous=False
-    )
 
 # DAILY CHALLENGE
 async def daily_challenge(update):
