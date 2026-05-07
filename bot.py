@@ -16,7 +16,7 @@ from telegram.ext import (
 
 import os
 import random
-
+from features.leaderboard import leaderboard
 from features.quiz import send_quiz
 
 from features.elite import elite_zone
@@ -101,50 +101,7 @@ async def notes_hub(update):
     await update.message.reply_text(text)
 
 # LEADERBOARD
-async def leaderboard(update):
-
-    if not user_xp:
-
-        await update.message.reply_text(
-            "🏆 No Students Yet"
-        )
-
-        return
-
-    sorted_users = sorted(
-        user_xp.items(),
-        key=lambda x: x[1],
-        reverse=True
-    )
-
-    text = "🏆 AIR LEADERBOARD 🏆\n\n"
-
-    rank = 1
-
-    for user_id, xp in sorted_users[:5]:
-
-        text += f"{rank}. User {user_id} → {xp} XP\n"
-
-        rank += 1
-
-    await update.message.reply_text(text)
-
-# STREAK
-async def streak(update):
-
-    user_id = update.effective_user.id
-
-    streak = user_streak.get(user_id, 0)
-
-    await update.message.reply_text(
-        f"""
-🔥 YOUR STREAK 🔥
-
-⚡ Current Streak: {streak}
-⭐ Keep Practicing Daily
-"""
-    )
-
+await leaderboard(update, user_xp)
 # ELITE ZONE
 
 
