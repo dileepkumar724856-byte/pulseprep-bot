@@ -28,7 +28,53 @@ TOKEN = os.getenv("TOKEN")
 MENU = [
     ["⚡ Units & Dimensions", "🎯 Daily Challenge"],
     ["📚 Notes Hub", "🏆 AIR Leaderboard"],
-    ["🔥 My Streak", "💎 Elite Zone"]
+    ["🔥 My Streak", "💎 Elite Zone"],
+    ["🔥 LEADER TEST"]
+]
+    [import random
+
+from questions.units_questions import units_questions
+
+try:
+    from questions.leader_test import leader_test
+except:
+    leader_test = []
+
+
+async def send_quiz(update):
+
+    q = random.choice(units_questions)
+
+    await update.message.reply_poll(
+        question=f"⚡ {q['question']}\n\n📘 {q['year']}",
+        options=q["options"],
+        type="quiz",
+        correct_option_id=q["answer"],
+        explanation=f"✅ {q['explanation']}",
+        is_anonymous=False
+    )
+
+
+async def send_leader_test(update):
+
+    if not leader_test:
+
+        await update.message.reply_text(
+            "🔥 Leader Test Coming Soon"
+        )
+
+        return
+
+    q = random.choice(leader_test)
+
+    await update.message.reply_poll(
+        question=f"🔥 {q['question']}",
+        options=q["options"],
+        type="quiz",
+        correct_option_id=q["answer"],
+        explanation=f"✅ {q['explanation']}",
+        is_anonymous=False
+    )
 ]
 
 # USER DATA
