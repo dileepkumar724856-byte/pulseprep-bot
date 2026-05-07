@@ -1,7 +1,11 @@
 import random
 
 from questions.units_questions import units_questions
-from questions.leader_test import leader_test
+
+try:
+    from questions.leader_test import leader_test
+except:
+    leader_test = []
 
 
 async def send_quiz(update):
@@ -19,6 +23,14 @@ async def send_quiz(update):
 
 
 async def send_leader_test(update):
+
+    if not leader_test:
+
+        await update.message.reply_text(
+            "🔥 Leader Test Coming Soon"
+        )
+
+        return
 
     q = random.choice(leader_test)
 
