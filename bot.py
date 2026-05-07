@@ -15,16 +15,16 @@ from telegram.ext import (
 )
 
 import os
-import random
-from features.notes import notes_hub
-from features.leaderboard import leaderboard
+
+# IMPORT FEATURES
 from features.quiz import send_quiz
 from features.elite import elite_zone
-from questions.units_questions import units_questions
+from features.notes import notes_hub
+from features.leaderboard import leaderboard
 
 TOKEN = os.getenv("TOKEN")
 
-# MAIN MENU
+# MENU
 MENU = [
     ["⚡ Units & Dimensions", "🎯 Daily Challenge"],
     ["📚 Notes Hub", "🏆 AIR Leaderboard"],
@@ -64,9 +64,6 @@ Choose Option 👇
         )
     )
 
-# QUIZ
-
-
 # DAILY CHALLENGE
 async def daily_challenge(update):
 
@@ -82,12 +79,21 @@ async def daily_challenge(update):
 
     await send_quiz(update)
 
-# NOTES HUB
+# STREAK
+async def streak(update):
 
-# LEADERBOARD
-await leaderboard(update, user_xp)
-# ELITE ZONE
+    user_id = update.effective_user.id
 
+    streak_count = user_streak.get(user_id, 0)
+
+    text = f"""
+🔥 YOUR STREAK 🔥
+
+⚡ Current Streak: {streak_count}
+⭐ Keep Practicing Daily
+"""
+
+    await update.message.reply_text(text)
 
 # ELITE BUTTONS
 async def elite_buttons(update, context):
@@ -98,10 +104,9 @@ async def elite_buttons(update, context):
 
     data = query.data
 
-    # AI MENTOR
     if data == "mentor":
 
-        'await' query.message.reply_text(
+        await query.message.reply_text(
             """
 🧠 AI MENTOR
 
@@ -109,11 +114,10 @@ async def elite_buttons(update, context):
 📚 Smart Explanations
 ⚡ Fast Learning
 
-Feature Coming Soon...
+Coming Soon...
 """
         )
 
-    # VAULT
     elif data == "vault":
 
         await query.message.reply_text(
@@ -123,13 +127,11 @@ Feature Coming Soon...
 🔒 Topper Notes
 🔒 Formula Sheets
 🔒 PYQ PDFs
-🔒 Revision Notes
 
-Elite Notes Coming Soon...
+Coming Soon...
 """
         )
 
-    # MOCK TEST
     elif data == "mock":
 
         await query.message.reply_text(
@@ -141,34 +143,6 @@ Elite Notes Coming Soon...
 🧬 Biology Test
 
 🚀 NEET Simulation Mode
-"""
-        )
-
-    # RANK BOOSTER
-    elif data == "rank":
-
-        await query.message.reply_text(
-            """
-📊 RANK BOOSTER
-
-📈 Accuracy Tracking
-📉 Weak Topic Analysis
-🏆 AIR Strategy
-
-Coming Soon...
-"""
-        )
-
-    # DAILY MISSION
-    elif data == "mission":
-
-        await query.message.reply_text(
-            """
-🔥 DAILY MISSION
-
-🎯 Solve 20 MCQs
-⭐ Reward = +100 XP
-🏆 Maintain Your Streak
 """
         )
 
@@ -207,7 +181,7 @@ async def handle_message(
 
         await daily_challenge(update)
 
-    # NOTES
+    # NOTES HUB
     elif text == "📚 Notes Hub":
 
         await notes_hub(update)
@@ -215,7 +189,7 @@ async def handle_message(
     # LEADERBOARD
     elif text == "🏆 AIR Leaderboard":
 
-        await leaderboard(update)
+        await leaderboard(update, user_xp)
 
     # STREAK
     elif text == "🔥 My Streak":
