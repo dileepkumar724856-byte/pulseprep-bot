@@ -16,13 +16,10 @@ from telegram.ext import (
 
 import os
 import random
-
 from features.notes import notes_hub
 from features.leaderboard import leaderboard
 from features.quiz import send_quiz
-
 from features.elite import elite_zone
-
 from questions.units_questions import units_questions
 
 TOKEN = os.getenv("TOKEN")
