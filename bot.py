@@ -17,7 +17,7 @@ from telegram.ext import (
 import os
 
 # IMPORT FEATURES
-from features.quiz import send_quiz
+from features.quiz import send_quiz, send_leader_test
 from features.elite import elite_zone
 from features.notes import notes_hub
 from features.leaderboard import leaderboard
@@ -30,51 +30,6 @@ MENU = [
     ["📚 Notes Hub", "🏆 AIR Leaderboard"],
     ["🔥 My Streak", "💎 Elite Zone"],
     ["🔥 LEADER TEST"]
-]
-    [import random
-
-from questions.units_questions import units_questions
-
-try:
-    from questions.leader_test import leader_test
-except:
-    leader_test = []
-
-
-async def send_quiz(update):
-
-    q = random.choice(units_questions)
-
-    await update.message.reply_poll(
-        question=f"⚡ {q['question']}\n\n📘 {q['year']}",
-        options=q["options"],
-        type="quiz",
-        correct_option_id=q["answer"],
-        explanation=f"✅ {q['explanation']}",
-        is_anonymous=False
-    )
-
-
-async def send_leader_test(update):
-
-    if not leader_test:
-
-        await update.message.reply_text(
-            "🔥 Leader Test Coming Soon"
-        )
-
-        return
-
-    q = random.choice(leader_test)
-
-    await update.message.reply_poll(
-        question=f"🔥 {q['question']}",
-        options=q["options"],
-        type="quiz",
-        correct_option_id=q["answer"],
-        explanation=f"✅ {q['explanation']}",
-        is_anonymous=False
-    )
 ]
 
 # USER DATA
@@ -246,6 +201,11 @@ async def handle_message(
     elif text == "💎 Elite Zone":
 
         await elite_zone(update)
+
+    # LEADER TEST
+    elif text == "🔥 LEADER TEST":
+
+        await send_leader_test(update)
 
 # BUILD APP
 app = ApplicationBuilder().token(TOKEN).build()
